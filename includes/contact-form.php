@@ -1,50 +1,49 @@
-<section class="page-wrap " style="min-height: 600px;">
-    <div class="container bg-light h-100 w-100 py-5">
+<?php
 
-        <div class="border border-1 rounded w-75 m-auto py-3 px-5 m-2 ">
-            <div class="container_login">
-                <form id="login_form" action="" method="">
-                    <div class="d-flex flex-column">
-                        <label for="uname"><b>Username</b></label>
-                        <input class="p-1 mb-3" type="email" placeholder="Enter Username" name="uname" required>
-
-                        <label for="psw"><b>Password</b></label>
-                        <input class="p-1" type="password" placeholder="Enter Password" name="psw" required>
-
-                        <button class="btn btn-primary mt-4 mb-2" type="submit">Login</button>
-                        <label>
-                            <input type="checkbox" checked="checked" name="remember"> Remember me
-                        </label>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center my-4">
-                        <div class="register">Do not have an account register here <a href="http://localhost/wordpress/register/">Click Here</a></div>
-                        <div class="login_admin"> Admin access <a href="/php_todolist/view_loginAdmin/login_admin.php">Click Here</a></div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button id="button-cancel-login" class="cancelbtn btn btn-danger" type="button">Cancel</button>
-                        <span class="psw">Forgot <a href="#">password?</a></span>
-                    </div>
-                </form>
-            </div>
-        </div>
+add_shortcode("userlogin", 'show_contact_form');
 
 
 
-    </div>
-</section>
+function show_contact_form()
+{
 
-<script>
-    jQuery(document).ready(function($) {
+    include(plugin_dir_path(__FILE__) . '/templates/login-form.php');
+}
 
-        $('#login_form').submit(function(event) {
 
-            event.preventDefault();
+// Add api
+add_action('wp_ajax_login', 'login_form');
+add_action('wp_ajax_nopriv_login', 'login_form');
 
-            var form = $(this).serialize();
+function login_form()
+{
 
-            console.log(form);
-        })
+    $formdata = [];
+    wp_parse_str($_POST['login'], $formdata);
 
-    })
-</script>
+    $uemail = $formdata['uemail'];
+    $psw = $formdata['psw'];
+
+    global $wpdb;
+    // // this is how you get access to the database
+    $result = $wpdb->get_results("SELECT * FROM wp_userstodo WHERE email ='$uemail'");
+    $id = $result[0]->user_id;
+    $name = $result[0]->names;
+    $email = $result[0]->email;
+    $password = $result[0]->password;
+
+    $cookieid = "user_login_id";
+    $cookiename = "user_login_name";
+
+    if (count($result) != 0) {
+        if ($password == $psw) {
+            setcookie($cookieid, $id, time() + 86400 * 30, "/");
+            setcookie($cookiename, $name, time() + 86400 * 30, "/");
+            wp_send_json_success(['mess' => "ok"]);
+        } else {
+            wp_send_json_success(['mess' => "erropass"]);
+        }
+    } else {
+        wp_send_json_success(['mess' => "erroemail"]);
+    }
+}

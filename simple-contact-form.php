@@ -29,13 +29,19 @@ class SimpleContactForm
         add_action('wp_enqueue_scripts', array($this, 'load_assets'));
 
         // Add shortcode
-        add_shortcode('contact-form', array($this, 'load_shortcode'));
+        // add_shortcode('contact-form', array($this, 'load_shortcode'));
 
         // Load Javascrpit
 
         // add_action('wp_footer', array($this, 'load_script'));
+
+
     }
 
+    public function initialize()
+    {
+        include(plugin_dir_path(__FILE__) . '/includes/contact-form.php');
+    }
 
 
 
@@ -87,15 +93,22 @@ class SimpleContactForm
 
 
 
-    public function load_shortcode()
-    {
-        include(plugin_dir_path(__FILE__) . '/includes/contact-form.php');
-    }
+    // public function load_shortcode()
+    // {
+    //     include(plugin_dir_path(__FILE__) . '/includes/contact-form.php');
+    // }
 
 
 
 
     // public function load_script(){ }
+
+
+
+
+
+
 }
 
-new SimpleContactForm;
+$contactPlugin = new SimpleContactForm;
+$contactPlugin->initialize();
