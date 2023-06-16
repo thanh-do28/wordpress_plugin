@@ -1,4 +1,5 @@
-let button = document.getElementById("button-cancel-login");
-button.onclick = () => {
+let buttonLogin = document.getElementById("button-cancel-login");
+
+buttonLogin.onclick = () => {
   window.location = "http://localhost/wordpress/";
 };

@@ -1,3 +1,6 @@
+<!-- html -->
+
+
 <section class="page-wrap " style="min-height: 600px;">
     <div class="container bg-light h-100 w-100 py-5">
 
@@ -41,7 +44,7 @@
         $('#login_form').submit(function(event) {
 
             event.preventDefault();
-            var endpoint = '<?php echo admin_url('admin-ajax.php'); ?>';
+            var endpoint = "<?php echo admin_url('admin-ajax.php'); ?>";
 
             var form = $(this).serialize();
 
@@ -58,7 +61,7 @@
                 contentType: false,
 
                 success: function(res) {
-                    console.log(res.data['mess']);
+                    // console.log(res.data['mess']);
 
                     if (res.data['mess'] == 'erroemail') {
                         $('.erro-email').addClass("d-block")

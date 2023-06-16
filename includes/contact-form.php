@@ -1,17 +1,24 @@
 <?php
 
-add_shortcode("userlogin", 'show_contact_form');
+add_shortcode("userlogin", 'show_contact_login');
+
+add_shortcode("userregister", "show_contact_register");
 
 
-
-function show_contact_form()
+function show_contact_login()
 {
 
     include(plugin_dir_path(__FILE__) . '/templates/login-form.php');
 }
 
+function show_contact_register()
+{
+    include(plugin_dir_path(__FILE__) . "/templates/register-form.php");
+}
 
-// Add api
+
+
+// form-login
 add_action('wp_ajax_login', 'login_form');
 add_action('wp_ajax_nopriv_login', 'login_form');
 
@@ -45,5 +52,47 @@ function login_form()
         }
     } else {
         wp_send_json_success(['mess' => "erroemail"]);
+    }
+}
+
+
+
+// form-register
+
+add_action('wp_ajax_register', 'register_form');
+add_action('wp_ajax_nopriv_register', 'register_form');
+
+function register_form()
+{
+
+    $formdata = [];
+    wp_parse_str($_POST['register'], $formdata);
+
+    $name = $formdata['name'];
+    $email = $formdata['email'];
+    $psw = $formdata['psw'];
+    $pswrepeat = $formdata['psw-repeat'];
+    global $wpdb;
+    // // this is how you get access to the database
+    $result = $wpdb->get_results("SELECT email FROM wp_userstodo WHERE email ='$email'");
+
+    if (count($result) != 0) {
+        wp_send_json_success(['mess' => "erroemail"]);
+    } else {
+        if ($psw != $pswrepeat) {
+            wp_send_json_success(['mess' => "erropass"]);
+        } else {
+
+            $results = $wpdb->insert(
+                'wp_userstodo',
+                array(
+                    'names' => $name,
+                    'email' => $email,
+                    'password' => $psw,
+                ),
+            );
+
+            wp_send_json_success(['mess' => "ok"]);
+        }
     }
 }
